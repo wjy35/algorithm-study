@@ -8,3 +8,4 @@
 /dataSources.local.xml
 /src/boj/Main.java
 *.class
+/out/
