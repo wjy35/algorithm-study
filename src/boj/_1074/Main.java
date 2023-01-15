@@ -21,6 +21,7 @@ public class Main {
         n = Integer.parseInt(st.nextToken());
         r = Integer.parseInt(st.nextToken());
         c = Integer.parseInt(st.nextToken());
+
         z(0,0,_2[n]);
 
     }
@@ -30,7 +31,6 @@ public class Main {
             System.out.println(count);
             return;
         }
-
         if(x<=r&& r<x+size && y<=c&&c<y+size){
             int nsize = size/2;
             z(x,y,nsize);
