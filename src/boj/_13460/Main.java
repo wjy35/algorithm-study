@@ -9,15 +9,18 @@ import java.util.StringTokenizer;
 
 /**
  * @author 왕준영
- * https://www.acmicpc.net/problem/13460
- * 구슬 탈출 2
- *
- * Point
- * 1. 4차원 배열 visit 을 이용한 방문 체크
+ * @see <a href="https://www.acmicpc.net/problem/13460"> 구슬 탈출 2 </a>
  */
 
 class Ball{
+    /**
+     * 구슬의 x,y 좌표
+     */
     int x,y;
+
+    /**
+     * 구슬의 색
+     */
     char color;
 
     public Ball(int x, int y, char color) {
@@ -33,6 +36,9 @@ class Ball{
 }
 
 class RedAndBlue{
+    /**
+     * 현재 구슬의 정보
+     */
     Ball red,blue;
 
     public RedAndBlue(Ball red, Ball blue) {
@@ -46,13 +52,25 @@ public class Main {
     static StringTokenizer st;
     static int n,m;
     static char[][] g;
-    static int [][][][] visit;
+    static Ball red,blue,goal;
 
+
+    /**
+     * count[red.x][red.y][blue.x][blue.y] 까지 가기위해 필요한 기울이기 횟수
+     */
+    static int [][][][] count;
+
+
+    /**
+     * 구슬을 기울였을때 구슬들의 x, y 좌표에 따른 결과
+     * FAIL : 파란공이 탈출해 실패
+     * SUCCESS : 빨간공만 탈출해 성공
+     * CONTINUE : 어떤 공도 탈출하지 못해 기울이기를 더 해야함
+     */
     static final int SUCCESS = 1;
     static final int FAIL = -1;
     static final int CONTINUE = 0;
 
-    static Ball red,blue,goal;
 
 
     public static void main(String[] args) throws IOException {
@@ -62,7 +80,7 @@ public class Main {
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
         g = new char[n][m];
-        visit = new int[n][m][n][m];
+        count = new int[n][m][n][m];
 
 
         String input;
@@ -90,62 +108,71 @@ public class Main {
 
     static int bfs(){
         Queue<RedAndBlue> q = new LinkedList<>();
-        visit[red.x][red.y][blue.x][blue.y]=1;
+        count[red.x][red.y][blue.x][blue.y]=1;
         q.offer(new RedAndBlue(red,blue));
         RedAndBlue next;
         int next_result;
 
         while(!q.isEmpty()){
             RedAndBlue now = q.poll();
-            if(visit[now.red.x][now.red.y][now.blue.x][now.blue.y]>10) return -1;
+            if(count[now.red.x][now.red.y][now.blue.x][now.blue.y]>10) return -1;
 
             next = left(now);
-            if(visit[next.red.x][next.red.y][next.blue.x][next.blue.y]==0){
+            if(count[next.red.x][next.red.y][next.blue.x][next.blue.y]==0){
                 next_result = getResult(next);
-                if(next_result==SUCCESS){ return visit[now.red.x][now.red.y][now.blue.x][now.blue.y]; }
+                if(next_result==SUCCESS){ return count[now.red.x][now.red.y][now.blue.x][now.blue.y]; }
                 if(next_result==CONTINUE){
                     q.offer(next);
-                    visit[next.red.x][next.red.y][next.blue.x][next.blue.y]= visit[now.red.x][now.red.y][now.blue.x][now.blue.y]+1;
+                    count[next.red.x][next.red.y][next.blue.x][next.blue.y]= count[now.red.x][now.red.y][now.blue.x][now.blue.y]+1;
                 }
             }
 
             next = right(now);
-            if(visit[next.red.x][next.red.y][next.blue.x][next.blue.y]==0){
+            if(count[next.red.x][next.red.y][next.blue.x][next.blue.y]==0){
                 next_result = getResult(next);
-                if(next_result==SUCCESS){ return visit[now.red.x][now.red.y][now.blue.x][now.blue.y]; }
+                if(next_result==SUCCESS){ return count[now.red.x][now.red.y][now.blue.x][now.blue.y]; }
                 if(next_result==CONTINUE){
                     q.offer(next);
-                    visit[next.red.x][next.red.y][next.blue.x][next.blue.y]= visit[now.red.x][now.red.y][now.blue.x][now.blue.y]+1;
+                    count[next.red.x][next.red.y][next.blue.x][next.blue.y]= count[now.red.x][now.red.y][now.blue.x][now.blue.y]+1;
                 }
             }
 
             next = up(now);
-            if(visit[next.red.x][next.red.y][next.blue.x][next.blue.y]==0){
+            if(count[next.red.x][next.red.y][next.blue.x][next.blue.y]==0){
                 next_result = getResult(next);
-                if(next_result==SUCCESS){ return visit[now.red.x][now.red.y][now.blue.x][now.blue.y]; }
+                if(next_result==SUCCESS){ return count[now.red.x][now.red.y][now.blue.x][now.blue.y]; }
                 if(next_result==CONTINUE){
                     q.offer(next);
-                    visit[next.red.x][next.red.y][next.blue.x][next.blue.y]= visit[now.red.x][now.red.y][now.blue.x][now.blue.y]+1;
+                    count[next.red.x][next.red.y][next.blue.x][next.blue.y]= count[now.red.x][now.red.y][now.blue.x][now.blue.y]+1;
                 }
             }
 
             next = down(now);
-            if(visit[next.red.x][next.red.y][next.blue.x][next.blue.y]==0){
+            if(count[next.red.x][next.red.y][next.blue.x][next.blue.y]==0){
                 next_result = getResult(next);
-                if(next_result==SUCCESS){ return visit[now.red.x][now.red.y][now.blue.x][now.blue.y]; }
+                if(next_result==SUCCESS){ return count[now.red.x][now.red.y][now.blue.x][now.blue.y]; }
                 if(next_result==CONTINUE){
                     q.offer(next);
-                    visit[next.red.x][next.red.y][next.blue.x][next.blue.y]= visit[now.red.x][now.red.y][now.blue.x][now.blue.y]+1;
+                    count[next.red.x][next.red.y][next.blue.x][next.blue.y]= count[now.red.x][now.red.y][now.blue.x][now.blue.y]+1;
                 }
             }
         }
         return -1;
     }
+
+    /**
+     * @param now 결과를 확인하려는 Red 와 Blue 좌표
+     */
     static int getResult(RedAndBlue now){
         if(now.blue.x == goal.x && now.blue.y == goal.y) return FAIL;
         if(now.red.x == goal.x && now.red.y == goal.y) return SUCCESS;
         return CONTINUE;
     }
+
+    /**
+     * @param now 현재 Red,Blue 의 좌표
+     * @return 왼쪽으로 기울였을때 Red,Blue 좌표
+     */
     static RedAndBlue left(RedAndBlue now){
         Ball f,b;
 
@@ -182,6 +209,11 @@ public class Main {
         if(f.color == 'R') return new RedAndBlue(f,b);
         return new RedAndBlue(b,f);
     }
+
+    /**
+     * @param now 현재 Red,Blue 좌표
+     * @return 오른쪽으로 기울였을때 Red,Blue 좌표
+     */
     static RedAndBlue right(RedAndBlue now){
         Ball f,b;
 
@@ -218,6 +250,11 @@ public class Main {
         if(f.color == 'R') return new RedAndBlue(f,b);
         return new RedAndBlue(b,f);
     }
+
+    /**
+     * @param now 현재 Red,Blue 좌표
+     * @return 위로 기울였을때 Red,Blue 좌표
+     */
     static RedAndBlue up(RedAndBlue now){
         Ball f,b;
 
@@ -254,6 +291,11 @@ public class Main {
         if(f.color == 'R') return new RedAndBlue(f,b);
         return new RedAndBlue(b,f);
     }
+
+    /**
+     * @param now 현재 Red,Blue 좌표
+     * @return 아래로 기울였을때 Red,Blue 좌표
+     */
     static RedAndBlue down(RedAndBlue now){
         Ball f,b;
 
