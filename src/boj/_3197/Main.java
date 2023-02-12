@@ -3,7 +3,7 @@ package _3197;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.StringTokenizer;
 import java.io.BufferedWriter;
@@ -14,10 +14,10 @@ import java.io.OutputStreamWriter;
  * @see <a href="https://www.acmicpc.net/problem/3197"> 백조의 호수 </a>
  */
 
-class Point {
+class Swan {
     int x,y;
 
-    public Point(int x, int y) {
+    public Swan(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -33,39 +33,34 @@ public class Main{
     /**
      * 처음 백조의 위치 저장
      */
-    static Point[] l;
-    static int li;
+    static Swan[] start_end;
+    static int start_end_idx;
 
     /**
      * 백조의 위치에서부터 t 시간일 때 bfs를 위한 Queue
      */
-    static Queue<Point> l_q;
+    static Queue<Swan> Swan;
 
     /**
      * 백조의 위치에서부터 t+1 시간일 때 bfs를 시작할 좌표를 담는 Queue
      */
-    static Queue<Point> l_update;
+    static Queue<Swan> updateSwan;
 
     /**
      * 백조의 bfs 방문 체크를 위한 Array
      */
-    static boolean[][] l_visit;
+    static boolean[][] visitSwan;
 
 
     /**
-     * 물의 위치에서부터 t 시간일 때 bfs를 위한 Queue
+     * 물의 위치에서부터 t 시간일 때 녹는 얼음 Queue
      */
-    static Queue<Point> melt_q;
+    static Queue<Swan> water;
 
     /**
-     * 물의 위치에서부터 t+1 시간일 때 bfs를 시작할 좌표를 담는 Queue
+     * 물의 위치에서부터 t+1 시간일 때 녹는 얼음을 찾기 위한 시작점을 저장하는 Queue
      */
-    static Queue<Point> melt_update;
-
-    /**
-     * 물의 bfs 방문 체크를 위한 Array
-     */
-    static boolean[][] melt_visit;
+    static Queue<Swan> updateWater;
 
 
     static int[] dx= {1,0,-1,0};
@@ -84,14 +79,13 @@ public class Main{
         c = Integer.parseInt(st.nextToken());
         g = new char[r][c];
 
-        l_visit = new boolean[r][c];
-        l_update = new LinkedList<>();
+        visitSwan = new boolean[r][c];
+        updateSwan = new ArrayDeque<>();
 
-        melt_visit = new boolean[r][c];
-        melt_update = new LinkedList<>();
+        updateWater = new ArrayDeque<>();
 
-        l = new Point[2];
-        li = 0;
+        start_end = new Swan[2];
+        start_end_idx = 0;
 
         String input;
         for(int i=0; i<r; i++) {
@@ -99,20 +93,20 @@ public class Main{
             for(int j=0; j<c; j++) {
                 g[i][j]=input.charAt(j);
                 if(g[i][j]=='L') {
-                    l[li]=new Point(i,j);
-                    li++;
+                    start_end[start_end_idx]=new Swan(i,j);
+                    start_end_idx++;
                 }
                 else if(g[i][j]=='.') {
-                    melt_update.offer(new Point(i,j));
-                    melt_visit[i][j]=true;
+                    updateWater.offer(new Swan(i,j));
                 }
             }
         }
 
-        l_update.offer(l[0]);
-        l_visit[l[0].x][l[0].y] = true;
-        melt_update.offer(l[1]);
-        melt_visit[l[1].x][l[1].y] = true;
+        updateSwan.offer(start_end[0]);
+        visitSwan[start_end[0].x][start_end[0].y] = true;
+
+        updateWater.offer(start_end[0]);
+        updateWater.offer(start_end[1]);
 
         bw.write(Integer.toString(bfs()));
         bw.flush();
@@ -125,62 +119,49 @@ public class Main{
 
         while(true) {
             // 이전 t에서 bfs를 종료했던 시점부터 bfs를 시작
-            l_q = l_update;
-            melt_q = melt_update;
+            Swan = updateSwan;
+            water = updateWater;
 
-            l_update = new LinkedList<>();
-            melt_update = new LinkedList<>();
-            while(!l_q.isEmpty()) {
-                Point now = l_q.poll();
+            updateSwan = new ArrayDeque<>();
+            updateWater = new ArrayDeque<>();
+
+            while(!Swan.isEmpty()) {
+                Swan now = Swan.poll();
                 for(int i=0; i<4; i++) {
                     nx = now.x+dx[i];
                     ny = now.y+dy[i];
 
-                    if(isIn(nx,ny)&&!l_visit[nx][ny]) {
+                    if(isIn(nx,ny)&&!visitSwan[nx][ny]) {
                         if(g[nx][ny]=='L') {
                             return t;
                         }
                         // 물이라면 현재 시간 (t) Queue에 넣어 계속 bfs
                         else if(g[nx][ny]=='.'){
-                            l_q.offer(new Point(nx,ny));
-                            l_visit[nx][ny]=true;
+                            Swan.offer(new Swan(nx,ny));
+                            visitSwan[nx][ny]=true;
                         }
                         // 얼음이라면 다음 시간 (t+1) Queue에 넣어 다음 시간의 bfs 시작 점으로 update
                         else {
-                            l_update.offer(new Point(nx,ny));
-                            l_visit[nx][ny]=true;
-                            melt_visit[nx][ny]=true;
-                            g[nx][ny]='.';
+                            updateSwan.offer(new Swan(nx,ny));
+                            visitSwan[nx][ny]=true;
                         }
-
                     }
                 }
             }
 
-            while(!melt_q.isEmpty()) {
-                Point now = melt_q.poll();
+            while(!water.isEmpty()) {
+                Swan now = water.poll();
 
                 for(int i=0; i<4; i++) {
                     nx = now.x+dx[i];
                     ny = now.y+dy[i];
 
-                    if(isIn(nx,ny)&&!melt_visit[nx][ny]) {
-
-                        // 물이라면 현재 시간 (t) Queue에 넣어 계속 bfs
-                        if(g[nx][ny]=='L'||g[nx][ny]=='.') {
-                            melt_q.offer(new Point(nx,ny));
-                            melt_visit[nx][ny] = true;
-                        }
-                        // 얼음이라면 다음 시간 (t+1) Queue에 넣어 다음 시간의 bfs 시작 점으로 update
-                        else {
-                            melt_update.offer(new Point(nx,ny));
-                            melt_visit[nx][ny]=true;
-                            g[nx][ny]='.';
-                        }
+                    if(isIn(nx,ny)&&g[nx][ny]=='X') {
+                        updateWater.offer(new Swan(nx,ny));
+                        g[nx][ny]='.';
                     }
                 }
             }
-
             t++;
         }
     }
