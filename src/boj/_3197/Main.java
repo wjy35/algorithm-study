@@ -39,7 +39,7 @@ public class Main{
     /**
      * 백조의 위치에서부터 t 시간일 때 bfs를 위한 Queue
      */
-    static Queue<Swan> Swan;
+    static Queue<Swan> swan;
 
     /**
      * 백조의 위치에서부터 t+1 시간일 때 bfs를 시작할 좌표를 담는 Queue
@@ -119,14 +119,14 @@ public class Main{
 
         while(true) {
             // 이전 t에서 bfs를 종료했던 시점부터 bfs를 시작
-            Swan = updateSwan;
+            swan = updateSwan;
             water = updateWater;
 
             updateSwan = new ArrayDeque<>();
             updateWater = new ArrayDeque<>();
 
-            while(!Swan.isEmpty()) {
-                Swan now = Swan.poll();
+            while(!swan.isEmpty()) {
+                Swan now = swan.poll();
                 for(int i=0; i<4; i++) {
                     nx = now.x+dx[i];
                     ny = now.y+dy[i];
@@ -137,7 +137,7 @@ public class Main{
                         }
                         // 물이라면 현재 시간 (t) Queue에 넣어 계속 bfs
                         else if(g[nx][ny]=='.'){
-                            Swan.offer(new Swan(nx,ny));
+                            swan.offer(new Swan(nx,ny));
                             visitSwan[nx][ny]=true;
                         }
                         // 얼음이라면 다음 시간 (t+1) Queue에 넣어 다음 시간의 bfs 시작 점으로 update
