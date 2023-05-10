@@ -16,5 +16,9 @@ public class Main {
     public static void main(String[] args) throws IOException {
         br = new BufferedReader(new InputStreamReader(System.in));
         bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        st = new StringTokenizer(br.readLine());
+
+        bw.flush();
     }
 }
+
