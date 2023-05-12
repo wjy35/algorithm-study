@@ -79,32 +79,6 @@ public class Main {
         bw.flush();
     }
 
-//    public static void findDistance(int now,int pre,long costSum){
-//        if(selectedEdge[now].size() == 1 && now != start){
-//            maxCostSum = Math.max(costSum,maxCostSum);
-//            return;
-//        }
-//        int count = selectedEdge[now].size();
-//
-//        for(int i=0; i<selectedEdge[now].size(); i++){
-//            if(selectedEdge[now].get(i).node==pre) {count --; break;}
-//        }
-//
-//        if(count == 1){
-//            for(int i=0; i<selectedEdge[now].size(); i++){
-//                if(selectedEdge[now].get(i).node==pre) continue;
-//
-//                findDistance(selectedEdge[now].get(i).node,now,costSum + selectedEdge[now].get(i).cost);
-//            }
-//        }else{
-//            for(int i=0; i<selectedEdge[now].size(); i++){
-//                if(selectedEdge[now].get(i).node==pre) continue;
-//
-//                findDistance(selectedEdge[now].get(i).node,now,selectedEdge[now].get(i).cost);
-//            }
-//        }
-//    }
-
     public static void findDistance(int now,int pre,long costSum){
         if(selectedEdge[now].size() == 1 && now != start){
             maxCostSum = Math.max(costSum,maxCostSum);
