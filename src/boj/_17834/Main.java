@@ -53,9 +53,9 @@ public class Main {
                 }
             }
             ans = red * blue * 2;
-            System.out.println(Long.toString(ans));
+            bw.write(Long.toString(ans));
         }else{
-            System.out.println(0);
+            bw.write("0");
         }
         bw.flush();
     }
