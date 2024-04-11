@@ -68,8 +68,8 @@ class Solution{
         for(int i=0; i<eventList.size(); i++){
             now = eventList.get(i);
 
-            minRevenue += minPrefixSum[count]*(now.time-latest);
-            maxRevenue += maxPrefixSum[count]*(now.time-latest);
+            minRevenue += minPrefixSum[Math.min(count,N)]*(now.time-latest);
+            maxRevenue += maxPrefixSum[Math.min(count,N)]*(now.time-latest);
 
             if(now.isStart()) count++;
             else count--;
