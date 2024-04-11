@@ -29,7 +29,6 @@ class Solution{
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
-
         A = new long[N+1];
         st = new StringTokenizer(br.readLine());
         for(int i=1; i<=N; i++){
@@ -39,8 +38,8 @@ class Solution{
         eventList = new ArrayList<>(M*2);
         for(int i=0; i<M; i++){
             st = new StringTokenizer(br.readLine());
-            eventList.add(new Event(Integer.parseInt(st.nextToken()),Event.START));
-            eventList.add(new Event(Integer.parseInt(st.nextToken())+1,Event.END));
+            eventList.add(Event.createStartEvent(Integer.parseInt(st.nextToken())));
+            eventList.add(Event.createEndEvent(Integer.parseInt(st.nextToken())));
         }
 
         return this;
@@ -100,8 +99,8 @@ class Solution{
         int time;
         int type;
 
-        public static final int START = 1;
-        public static final int END = 2;
+        private static final int START = 1;
+        private static final int END = 2;
 
         public boolean isStart(){
             return this.type==Event.START;
@@ -112,7 +111,15 @@ class Solution{
             return Long.compare(this.time,o.time);
         }
 
-        public Event(int time, int type) {
+        public static Event createStartEvent(int time){
+            return new Event(time,Event.START);
+        }
+
+        public static Event createEndEvent(int time){
+            return new Event(time+1,Event.END);
+        }
+
+        private Event(int time, int type) {
             this.time = time;
             this.type = type;
         }
