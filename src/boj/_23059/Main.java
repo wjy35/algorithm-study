@@ -21,15 +21,15 @@ class Solution{
 
     int N;
 
-    Map<String,List<String>> edge;
-    Map<String,Integer> count;
+    Map<String,List<String>> nameToEdgeList;
+    Map<String,Integer> nameToCount;
     Deque<String> buyOrder;
 
     public Solution readInput() throws IOException{
         N = Integer.parseInt(br.readLine());
 
-        edge = new HashMap<>();
-        count = new HashMap<>();
+        nameToEdgeList = new HashMap<>();
+        nameToCount = new HashMap<>();
 
         String u,v;
         List<String> edgeList;
@@ -38,20 +38,20 @@ class Solution{
             u = st.nextToken();
             v = st.nextToken();
 
-            if(!edge.containsKey(v)) edge.put(v,new ArrayList<>());
-            if(edge.containsKey(u)){
-                edge.get(u).add(v);
+            if(!nameToEdgeList.containsKey(v)) nameToEdgeList.put(v,new ArrayList<>());
+            if(nameToEdgeList.containsKey(u)){
+                nameToEdgeList.get(u).add(v);
             }else {
                 edgeList = new ArrayList<>();
                 edgeList.add(v);
-                edge.put(u,edgeList);
+                nameToEdgeList.put(u,edgeList);
             }
 
-            if(!count.containsKey(u)) count.put(u,0);
-            if(count.containsKey(v)){
-                count.put(v,count.get(v)+1);
+            if(!nameToCount.containsKey(u)) nameToCount.put(u,0);
+            if(nameToCount.containsKey(v)){
+                nameToCount.put(v, nameToCount.get(v)+1);
             }else{
-                count.put(v,1);
+                nameToCount.put(v,1);
             }
         }
 
@@ -63,8 +63,8 @@ class Solution{
         PriorityQueue<Item> pq = new PriorityQueue<>();
         buyOrder = new ArrayDeque<>();
 
-        for(String itemName : count.keySet()){
-            if(count.get(itemName).equals(0)) pq.offer(new Item(itemName,0));
+        for(String itemName : nameToCount.keySet()){
+            if(nameToCount.get(itemName).equals(0)) pq.offer(new Item(itemName,0));
         }
 
         Item now;
@@ -72,16 +72,16 @@ class Solution{
             now = pq.poll();
             buyOrder.add(now.name);
 
-            for(String nextItemName: edge.get(now.name)){
-                count.put(nextItemName,count.get(nextItemName)-1);
+            for(String nextItemName: nameToEdgeList.get(now.name)){
+                nameToCount.put(nextItemName, nameToCount.get(nextItemName)-1);
 
-                if(count.get(nextItemName).equals(0)){
+                if(nameToCount.get(nextItemName).equals(0)){
                     pq.offer(new Item(nextItemName,now.priority+1));
                 }
             }
         }
 
-        if(buyOrder.size()==count.keySet().size()) return this;
+        if(buyOrder.size()== nameToCount.keySet().size()) return this;
 
         buyOrder = new ArrayDeque<>();
         buyOrder.offer("-1");
