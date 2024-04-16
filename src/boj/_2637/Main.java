@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * @link https://www.acmicpc.net/problem/2637
  * @title 장난감 조립
- * @algorithm Topologicla Sort
+ * @algorithm Topological Sort
  */
 public class Main {
 
