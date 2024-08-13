@@ -1,11 +1,12 @@
 package _7512;
+
 import java.io.*;
 import java.util.*;
 
 /**
  * @link https://www.acmicpc.net/problem/7512
  * @title 연속하는 소수의 합
- * @algorithm 
+ * @algorithm
  */
 public class Main {
 
@@ -36,14 +37,14 @@ class Solution{
             for(int i=0; i<m; i++) n[i] = Integer.parseInt(st.nextToken());
 
             List<Integer> commonPrimeNumber = new ArrayList<>();
-            
+
             for(int i=n[0]; i<prefixSum.length; i++) {
                 int sum = prefixSum[i]-prefixSum[i-n[0]];
 
                 if(sum>10_000_000) break;
                 if(isPrimeNumber[sum]) commonPrimeNumber.add(sum);
             }
-            
+
             for(int i=1; i<m; i++){
                 List<Integer> tmp = new ArrayList<>();
 
@@ -56,7 +57,7 @@ class Solution{
 
                 commonPrimeNumber = tmp;
             }
-            
+
 
             bw.write("Scenario ");
             bw.write(Integer.toString(t));
