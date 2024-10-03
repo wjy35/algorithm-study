@@ -35,12 +35,25 @@ class Solution{
         for(int x=0; x<height; x++){
             for(int y=0; y<width; y++){
                 if(map[x][y]!='L') continue;
+                if(getAdjacentLCount(x,y)>2) continue;
 
                 maxDistance = Math.max(maxDistance,getMaxDistanceFrom(new Point(x,y)));
             }
         }
 
         answer = Integer.toString(maxDistance);
+    }
+
+    private int getAdjacentLCount(int x,int y){
+        int adjacentLCount = 0;
+        for(int i=0; i<4; i++){
+            int nx = x+dx[i];
+            int ny = y+dy[i];
+
+            if(isInMap(nx,ny) && map[nx][ny]=='L') adjacentLCount++;
+        }
+
+        return adjacentLCount;
     }
 
     private int getMaxDistanceFrom(Point origin){
