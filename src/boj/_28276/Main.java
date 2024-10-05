@@ -22,12 +22,12 @@ class Solution{
 
     int[] parents;
     int[] studentCounts;
-
-    int min = 1_000_001;
-
-    final int IS_EMPTY_TARGET = 0;
-    final int IS_OVER_STUDENT_COUNT_LIMIT = -1;
-    final int UNION_SUCCESS = 1;
+    int minStudentCountLimit = 1_000_001;
+    Queue<Integer> leftUnionedLineRootQueue;
+    final int FAIL = 0;
+    final int OVER_STUDENT_COUNT_LIMIT = -1;
+    final int SUCCESS = 1;
+    
     private void readInput() throws IOException{
         st = new StringTokenizer(br.readLine());
 
@@ -51,7 +51,7 @@ class Solution{
         while (l <= r) {
             int mid = (l + r) / 2;
             if (isPossibleIn(mid)) {
-                min = Math.min(min, mid);
+                minStudentCountLimit = Math.min(minStudentCountLimit, mid);
                 r = mid - 1;
             } else {
                 l = mid + 1;
@@ -59,87 +59,58 @@ class Solution{
         }
     }
 
-    private int[] dx = {-1,0};
-    private int[] dy = {0,-1};
     private boolean isNotIn(int x,int y){
         return x<0 || x>=R || y<0 || y>=C;
     }
 
     private boolean isPossibleIn(int studentCountLimit){
-        int partitionCount = 0;
+        int usedPartitionCount = 0;
 
-        int total = R*C;
-        parents = new int[total];
+        int spaceCount = R*C;
+        parents = new int[spaceCount];
+        studentCounts = new int[spaceCount];
         Arrays.fill(parents,-1);
-        studentCounts = new int[total];
 
         int y=0;
-        while(y<C && partitionCount<=W){
-            boolean isNotRequiredPartition = true;
+        while(y<C && usedPartitionCount<=W){
+            boolean isPartitionNotUsed = true;
+            leftUnionedLineRootQueue = new ArrayDeque<>();
 
-            Queue<Integer> undoQueue = new ArrayDeque<>();
             int x=0;
             for(; x<R; x++){
                 if(isEmpty[x][y]) continue;
                 if(studentCountLimit==0) return false;
 
-                int unionStatus = unionTopAndGetStatus(x,y,studentCountLimit);
-                if(unionStatus==IS_OVER_STUDENT_COUNT_LIMIT){
-                    for(Integer top : undoQueue) parents[top] = top;
-
-                    isNotRequiredPartition = false;
+                if(unionTopAndGetStatus(x,y,studentCountLimit)==OVER_STUDENT_COUNT_LIMIT){
+                    usePartition();
+                    isPartitionNotUsed = false;
                     break;
                 }
 
-                int lx = x;
-                int ly = y-1;
-
-                if(isNotIn(lx,ly)) continue;
-                if(isEmpty[lx][ly]) continue;
-
-                int current = x*C+y;
-                int lineRoot = find(current,y);
-                int currentRoot = find(lineRoot);
-
-                int left = lx*C+ly;
-                int leftRoot = find(left);
-
-                if(currentRoot==leftRoot) continue;
-
-                if(studentCounts[currentRoot]+studentCounts[leftRoot]>studentCountLimit) {
-                    for(Integer top : undoQueue) parents[top] = top;
-
+                if(unionLeftAndGetStatus(x,y,studentCountLimit)==OVER_STUDENT_COUNT_LIMIT){
+                    usePartition();
                     x++;
-                    isNotRequiredPartition = false;
+                    isPartitionNotUsed = false;
                     break;
-                }else{
-                    parents[currentRoot] = leftRoot;
-                    studentCounts[leftRoot] += studentCounts[currentRoot];
-
-                    undoQueue.add(lineRoot);
                 }
-
             }
 
-            if(isNotRequiredPartition){
+            if(isPartitionNotUsed){
                 y++;
                 continue;
             }
 
-            if(partitionCount>=W) {
+            if(usedPartitionCount>=W) {
                 return false;
             }
 
             for(; x<R; x++){
                 if(isEmpty[x][y]) continue;
 
-                int unionStatus = unionTopAndGetStatus(x,y,studentCountLimit);
-                if(unionStatus==IS_OVER_STUDENT_COUNT_LIMIT){
-                    return false;
-                }
+                if(unionTopAndGetStatus(x,y,studentCountLimit)==OVER_STUDENT_COUNT_LIMIT) return false;
             }
 
-            partitionCount++;
+            usedPartitionCount++;
             y++;
         }
 
@@ -147,6 +118,7 @@ class Solution{
     }
 
     private int unionTopAndGetStatus(int x, int y, int studentCountLimit){
+        /* init Node */
         int current = x*C+y;
         if(studentCounts[current]==0){
             parents[current] = current;
@@ -154,23 +126,51 @@ class Solution{
         }
 
         int tx = x-1;
-        int ty = y;
-        if(isNotIn(tx,ty)) return IS_EMPTY_TARGET;
-        if(isEmpty[tx][ty]) return IS_EMPTY_TARGET;
+        if(isNotIn(tx,y)) return FAIL;
+        if(isEmpty[tx][y]) return FAIL;
 
-        int top = tx*C+ty;
-        int lineRoot = find(top,y);
+        int top = tx*C+y;
+        int lineRoot = findLineRoot(top,y);
         int topRoot = find(lineRoot);
 
-        if(studentCounts[topRoot]==studentCountLimit) return IS_OVER_STUDENT_COUNT_LIMIT;
+        if(studentCounts[topRoot]==studentCountLimit) return OVER_STUDENT_COUNT_LIMIT;
 
         parents[current] = lineRoot;
         studentCounts[lineRoot]++;
         if(lineRoot != topRoot) studentCounts[topRoot]++;
 
-        return 1;
+        return SUCCESS;
     }
 
+    private int unionLeftAndGetStatus(int x, int y, int studentCountLimit){
+        int ly = y-1;
+
+        if(isNotIn(x,ly)) return FAIL;
+        if(isEmpty[x][ly]) return FAIL;
+
+        int current = x*C+y;
+        int lineRoot = findLineRoot(current,y);
+        int currentRoot = find(lineRoot);
+
+        int left = x*C+ly;
+        int leftRoot = find(left);
+
+        if(currentRoot==leftRoot) return FAIL;
+
+        if(studentCounts[currentRoot]+studentCounts[leftRoot]>studentCountLimit) {
+            return OVER_STUDENT_COUNT_LIMIT;
+        }
+
+        parents[currentRoot] = leftRoot;
+        studentCounts[leftRoot] += studentCounts[currentRoot];
+        leftUnionedLineRootQueue.add(lineRoot);
+
+        return SUCCESS;
+    }
+
+    private void usePartition(){
+        for(Integer top : leftUnionedLineRootQueue) parents[top] = top;
+    }
 
     private int find(int index){
         if(index == parents[index]) return index;
@@ -178,15 +178,15 @@ class Solution{
         return parents[index] = find(parents[index]);
     }
 
-    private int find(int index, int y){
+    private int findLineRoot(int index, int y){
         if(index == parents[index]) return index;
         if(index%C==y && parents[index]%C!=y) return index;
 
-        return parents[index] = find(parents[index],y);
+        return parents[index] = findLineRoot(parents[index],y);
     }
 
     private void writeOutput() throws IOException{
-        bw.write(Integer.toString(min));
+        bw.write(Integer.toString(minStudentCountLimit));
         bw.flush();
     }
 
