@@ -5,8 +5,8 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/boj" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/goorm" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/swea" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/exam" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
