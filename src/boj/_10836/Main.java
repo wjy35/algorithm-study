@@ -19,7 +19,6 @@ class Solution{
 
     int M,N;
     int[] outside;
-    int[] inside;
 
     int[][] result;
     private void readInput() throws IOException{
@@ -28,7 +27,6 @@ class Solution{
         N = Integer.parseInt(st.nextToken());
 
         outside = new int[M*2-1];
-        inside = new int[M];
         for(int i=0; i<N; i++){
             st = new StringTokenizer(br.readLine());
             int[] count = new int[3];
@@ -37,25 +35,16 @@ class Solution{
             int point = 2;
             if(count[1]>0){
                 point = 1;
-
-                int position = Math.max(count[0]-M,0);
                 outside[count[0]] += point;
-                inside[position+1] += point;
             }
 
             if(count[2]>0){
                 int sidePosition = count[0]+count[1];
                 outside[sidePosition] += point;
-
-                int position = Math.max(sidePosition-M,0);
-                inside[position+1] += point;
             }
         }
 
-        inside[0]++;
         outside[0]++;
-
-        for(int i=1; i<M; i++) inside[i] += inside[i-1];
         for(int i=1; i<outside.length; i++) outside[i] += outside[i-1];
 
         result = new int[M][M];
@@ -64,13 +53,9 @@ class Solution{
 
         for(int i=1; i<M; i++){
             for(int j=1; j<M; j++){
-                result[i][j] = inside[j];
+                result[i][j] = result[i-1][j];
             }
         }
-    }
-
-    private void solve(){
-
     }
 
     private void writeOutput() throws IOException{
@@ -86,7 +71,6 @@ class Solution{
 
     public void start() throws IOException{
         readInput();
-        solve();
         writeOutput();
     }
 
