@@ -1,5 +1,6 @@
 package _25_02_10._1;
-import java.util.*;
+
+import java.util.PriorityQueue;
 
 public class Solution {
     final int SPACE = 0;
