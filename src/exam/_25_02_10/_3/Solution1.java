@@ -1,4 +1,4 @@
-package _3;
+package _25_02_10._3;
 
 class Solution1 {
     int[][] board;
