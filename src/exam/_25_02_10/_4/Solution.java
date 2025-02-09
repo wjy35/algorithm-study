@@ -1,6 +1,6 @@
-package _4;
+package _25_02_10._4;
 
-import java.util.*;
+import java.util.Arrays;
 
 class Solution {
     public int solution(int[] play_list, int listen_time) {
