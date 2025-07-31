@@ -19,6 +19,7 @@ class Test {
   }
 
   String answer;
+
   private void solve(int testNumber) {
     List<Integer>[] alphaToIndexes = new List[26];
     for(int i=0; i<alphaToIndexes.length; i++) alphaToIndexes[i] = new ArrayList<>();
