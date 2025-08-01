@@ -97,6 +97,13 @@ class Solution {
     while (!pq.isEmpty()) {
       Node current = pq.poll();
 
+      if (minDistances[current.x][current.y] != current.w) {
+        continue;
+      }
+      if (maxTurnCounts[current.x][current.y] != current.turnCount) {
+        continue;
+      }
+
       for (int direction = 0; direction < 4; direction++) {
         int nx = current.x + delta[direction][0];
         int ny = current.y + delta[direction][1];
