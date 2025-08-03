@@ -21,6 +21,7 @@ class Solution{
     int N;
     List<Integer>[] edge;
     int[] inputEdgeCount;
+
     private void readInput() throws IOException{
         N = Integer.parseInt(br.readLine());
 
@@ -62,10 +63,10 @@ class Solution{
     }
 
     int[] puzzle;
+
     private void solve(){
         puzzle = new int[N*N];
 
-        int number = N*N;
         Queue<Integer> q = new ArrayDeque<>();
         for(int i=0; i<inputEdgeCount.length; i++){
             if(inputEdgeCount[i]>0)continue;
@@ -73,6 +74,7 @@ class Solution{
             q.offer(i);
         }
 
+        int number = N*N;
         while(!q.isEmpty()){
             int current = q.poll();
 
@@ -105,14 +107,6 @@ class Solution{
         writeOutput();
     }
 
-    private static class PuzzlePiece{
-        int index,number;
-
-        public PuzzlePiece(int index, int number) {
-            this.index = index;
-            this.number = number;
-        }
-    }
     private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
     private StringTokenizer st;
